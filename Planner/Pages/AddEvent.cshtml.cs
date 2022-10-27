@@ -70,7 +70,7 @@ namespace Planner.Pages
         public string Color { get; set; } = "#9e5fff";
 
         [StringLength(100, ErrorMessage = "Maximum length is 50 characters."),
-            Required(ErrorMessage = "Title is required."), RegularExpression(@"^[a-zA-Z0-9 ]*$", ErrorMessage = "No special character allowed in title.")]
+            Required(ErrorMessage = "Title is required.")]
         public string Title { get; set; }
         [Required(ErrorMessage = "Start date is required.")/*,
             ModelBinder(BinderType = typeof(CustomModelBinder))*/]
