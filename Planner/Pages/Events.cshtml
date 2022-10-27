@@ -1,0 +1,64 @@
+﻿@page
+@model EventsModel
+@{
+    ViewData["Title"] = "Events";
+}
+
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <h4 class="float-start">Events</h4>
+            <a class="btn btn-primary float-end" asp-page="/AddEvent">Add</a>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-md-12">
+            <form method="post">
+                <div class="form-group row">
+                    <div class="col-sm-5 col-xl-5">
+                        <label for="status">Status</label>
+                        <select class="form-control" asp-items="@Model.SelectListItems"
+                            asp-for="@Model.SearchModel.StatusId"></select>
+                    </div>
+                    <div class="col-sm-5 col-xl-5">
+                        <label for="searchKey">Search Term</label>
+                        <input type="text" class="form-control" asp-for="@Model.SearchModel.SearchKey"
+                            placeholder="Search Term">
+                    </div>
+                    <div class="col-sm-1 col-xl-1 mt-4">
+                        <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">Start</th>
+                            <th scope="col">End</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var e in Model.Events)                                                                                                                                                                 
+                    {                                                                                                                                                                                                
+                        <tr>                                                                                                                                                                                         
+                            <td>@e.Title</td>                                                                                                                                                                        
+                            <td>@e.Start.ToShortDateString()</td>                                                                                                                                                    
+                            <td>@e.End.ToShortDateString()</td>                                                                                                                                                      
+                            <td>@Html.Raw(e.Status)</td>                                                                                                                                                         
+                            <td><a asp-area="" asp-page="ViewEvent" asp-route-id="@e.Id"><i class="bi bi-eye-fill" aria-hidden="true"></i></a> | <a asp-area="" asp-page="EditEvent" asp-route-id="@e.Id"><i class="bi bi-pencil-fill" aria-hidden="true"></i></a> | <a asp-area="" asp-page="Events" asp-page-handler="delete"
+                             asp-route-id="@e.Id"><i class="bi bi-trash-fill" aria-hidden="true"></i></a></td>                                                                                                                                           
+                        </tr>                                                                                                                                                                                        
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>

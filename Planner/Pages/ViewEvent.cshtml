@@ -1,0 +1,74 @@
+﻿@page
+@model Planner.Pages.ViewEventModel
+@{
+}
+@if (Model.Event != null)
+{
+        <div class="row mb-4">
+            <div class="col-sm-12 col-xl-12">
+                <p class="h4 float-start text-muted">@Model.Event.Title</p>
+            </div>
+        </div>
+
+        <dl class="row">
+            <dt class="col-sm-3 d-font-medium">Description</dt>
+            <dd class="col-sm-9 d-font-13"><mark>@Model.Event.Body</mark></dd>
+
+            <dt class="col-sm-3 d-font-medium">Event Schedule</dt>
+            <dd class="col-sm-9">
+                <p class="d-font-13"><mark>@Model.Event.FormattedDate</mark></p>
+                <p class="d-font-13">Status: @Html.Raw(Model.Event.Status)</p>
+            </dd>
+
+            <dt class="col-sm-3 d-font-medium">Location</dt>
+            <dd class="col-sm-9 d-font-13"><mark>@Model.Event.Location</mark></dd>
+        </dl>
+
+        <div>
+            <div id="map"></div>
+        </div>
+}
+else
+{
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-danger" role="alert">
+                    No event found.
+                </div>
+            </div>
+        </div>
+}
+
+@section Scripts
+{
+<script>
+
+    function initMap() {
+        var map;
+        var marker;
+        var geocoder;
+
+        geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ address: "@Model.Event.Location" },
+            (results, status) => {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    var center = results[0].geometry.location;
+                    map = new google.maps.Map(document.getElementById("map"), {
+                        zoom: 15,
+                        center: center
+                    });
+
+                    marker = new google.maps.Marker({
+                        position: center,
+                        map: map
+                    });
+                }
+            });
+    }
+
+    window.initMap = initMap;
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpvsOsN2WrdapecHwXSUKadfp5DE2ARj4&callback=initMap"
+    defer></script>
+}
