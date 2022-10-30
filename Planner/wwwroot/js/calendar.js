@@ -1,5 +1,10 @@
 ﻿$(function () {
     var apiUrl = '/api/PlanApi';
+    var scheme = document.location.protocol === "https:" ? "wss" : "ws";
+    var port = document.location.port ? (":" + document.location.port) : "";
+    var connectionUrl = scheme + "://" + document.location.hostname + port + "/ws";
+    let socket = new WebSocket(connectionUrl);
+
     var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
         headerToolbar: {
             left: 'prev,next today',
@@ -104,7 +109,7 @@
         plan.color = "";
 
         // FIXME - Validation
-        
+
         $.ajax({
             url: url,
             method: method,
@@ -121,4 +126,17 @@
             }
         });
     });
+
+    socket.onopen = function (event) {
+        console.log("Socket is opened");
+    };
+
+    socket.onclose = function (event) {
+        console.log("Socket is closed");
+    };
+
+    socket.onmessage = function (event) {
+        console.log("New plan added");
+    }
+
 })
