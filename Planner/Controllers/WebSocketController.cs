@@ -35,21 +35,18 @@ public class WebSocketController : ControllerBase
     private async Task Echo(WebSocket webSocket)
     {
         var buffer = new byte[1024 * 4];
-        _logger.Log(LogLevel.Information, "Waiting message from Client");
         var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
         _logger.Log(LogLevel.Information, "Message received from Client");
 
         while (!result.CloseStatus.HasValue)
         {
-            var serverMsg = Encoding.UTF8.GetBytes($"Server: Hello. You said: {Encoding.UTF8.GetString(buffer)}");
-            await webSocket.SendAsync(new ArraySegment<byte>(serverMsg, 0, serverMsg.Length), result.MessageType, result.EndOfMessage, CancellationToken.None);
-            _logger.Log(LogLevel.Information, "Message sent to Client");
-
             result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
             _logger.Log(LogLevel.Information, "Message received from Client");
 
         }
-        await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+
+        var socketId = _connManager.GetId(webSocket);
+        await _connManager.RemoveSocket(socketId);
         _logger.Log(LogLevel.Information, "WebSocket connection closed");
     }
 }
