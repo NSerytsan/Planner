@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Planner.Data;
 using Planner.MessageQueue;
 using Planner.Services;
-using Planner.WebSockets;
+using Planner.WebSocketManager;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,8 +35,9 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IEventService, EventService>();
-builder.Services.AddTransient<WebSocketConnectionManager>();
 builder.Services.AddScoped<IMessageProducer, MessageProducer>();
+builder.Services.AddSingleton<ConnectionManager>();
+builder.Services.AddHostedService<MQMonitor>();
 
 var app = builder.Build();
 

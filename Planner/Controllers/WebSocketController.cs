@@ -1,18 +1,17 @@
-using System.Net.WebSockets;
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
+using Planner.WebSocketManager;
 
 namespace Planner.Controllers;
 
 public class WebSocketController : ControllerBase
 {
     private readonly ILogger<WebSocketController> _logger;
+    private readonly ConnectionManager _connManager;
 
-    public WebSocketController(ILogger<WebSocketController> logger)
+    public WebSocketController(ILogger<WebSocketController> logger, ConnectionManager connManager)
     {
         _logger = logger;
+        _connManager = connManager;
     }
 
     [HttpGet("/ws")]
@@ -20,36 +19,14 @@ public class WebSocketController : ControllerBase
     {
         if (HttpContext.WebSockets.IsWebSocketRequest)
         {
-            using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+            var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+            _connManager.AddSocket(webSocket);
             _logger.LogInformation("Accept socket");
-            await ProcessMessages(webSocket);
+           
         }
         else
         {
             HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-        }
-    }
-
-    private static async Task ProcessMessages(WebSocket webSocket)
-    {
-        var buffer = new byte[1024 * 4];
-
-        var factory = new ConnectionFactory { HostName = "localhost" };
-        var connection = factory.CreateConnection();
-
-        using var channel = connection.CreateModel();
-        channel.QueueDeclare("plans", exclusive: false);
-        var consumer = new EventingBasicConsumer(channel);
-        while (true)
-        {
-            consumer.Received += (model, eventArgs) =>
-            {
-                var body = eventArgs.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                
-            };
-
-            channel.BasicConsume(queue: "plans", autoAck: true, consumer: consumer);
         }
     }
 }
