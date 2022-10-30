@@ -1,3 +1,4 @@
+#nullable disable
 using Planner.Data;
 using Planner.Dtos.Event;
 using Planner.Extensions;

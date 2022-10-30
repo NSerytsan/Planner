@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Planner.Data;
+using Planner.MessageQueue;
 using Planner.Services;
+using Planner.WebSockets;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddTransient<WebSocketConnectionManager>();
+builder.Services.AddScoped<IMessageProducer, MessageProducer>();
 
 var app = builder.Build();
 
@@ -59,5 +63,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapRazorPages();
+app.UseWebSockets();
 
 app.Run();

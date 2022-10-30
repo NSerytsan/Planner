@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Planner.Data;
 using Planner.Dtos.Plan;
 using Planner.Extensions;
+using Planner.MessageQueue;
 
 namespace Planner.Controllers
 {
@@ -13,11 +14,13 @@ namespace Planner.Controllers
     {
         private readonly PlannerDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IMessageProducer _messagePublisher;
 
-        public PlanApiController(PlannerDbContext context, UserManager<IdentityUser> userManager)
+        public PlanApiController(PlannerDbContext context, UserManager<IdentityUser> userManager, IMessageProducer messagePublisher)
         {
             _context = context;
             _userManager = userManager;
+            _messagePublisher = messagePublisher;
         }
 
         [HttpGet]
@@ -73,7 +76,9 @@ namespace Planner.Controllers
 
             _context.Plans.Add(plan);
             await _context.SaveChangesAsync();
-
+            
+            _messagePublisher.SendMessage("Plan added");
+            
             return CreatedAtAction("GetPlan", new { id = plan.Id },
              new PlanDto()
              {
