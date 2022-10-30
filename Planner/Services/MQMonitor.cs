@@ -24,21 +24,24 @@ public class MQMonitor : IHostedService
                 HostName = "localhost"
             };
             var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
-            channel.QueueDeclare("plans", exclusive: false);
-            var consumer = new EventingBasicConsumer(channel);
+            
             while (!cancellationToken.IsCancellationRequested)
             {
+                using var channel = connection.CreateModel();
+                channel.QueueDeclare("plans", exclusive: false);
+                var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, eventArgs) =>
                 {
                     var body = eventArgs.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
-
+                    
+                    
                     foreach (var dict in _connManager.GetAll())
                     {
                         var socket = dict.Value;
                         if (socket.State == WebSocketState.Open)
                         {
+                            
                             socket.SendAsync(buffer: new ArraySegment<byte>(array: Encoding.ASCII.GetBytes(message),
                                                                       offset: 0,
                                                                       count: message.Length),
@@ -48,8 +51,8 @@ public class MQMonitor : IHostedService
                         }
                     }
                 };
-
                 channel.BasicConsume(queue: "plans", autoAck: true, consumer: consumer);
+                
             }
         });
 

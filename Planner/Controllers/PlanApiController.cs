@@ -76,9 +76,9 @@ namespace Planner.Controllers
 
             _context.Plans.Add(plan);
             await _context.SaveChangesAsync();
-            
-            _messagePublisher.SendMessage("Plan added");
-            
+
+            await _messagePublisher.SendMessageAsync("Plan added");
+
             return CreatedAtAction("GetPlan", new { id = plan.Id },
              new PlanDto()
              {
@@ -117,6 +117,7 @@ namespace Planner.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                await _messagePublisher.SendMessageAsync("Plan updated");
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -150,6 +151,7 @@ namespace Planner.Controllers
 
             _context.Plans.Remove(skill);
             await _context.SaveChangesAsync();
+            await _messagePublisher.SendMessageAsync("Plan deleted");
 
             return NoContent();
         }

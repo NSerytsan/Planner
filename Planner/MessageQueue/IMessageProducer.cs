@@ -1,5 +1,5 @@
 namespace Planner.MessageQueue;
 public interface IMessageProducer
 {
-    void SendMessage(string message);
+    public Task SendMessageAsync(string message);
 }
