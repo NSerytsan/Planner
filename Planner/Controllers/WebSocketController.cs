@@ -46,6 +46,7 @@ public class WebSocketController : ControllerBase
             {
                 var body = eventArgs.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
+                
             };
 
             channel.BasicConsume(queue: "plans", autoAck: true, consumer: consumer);
