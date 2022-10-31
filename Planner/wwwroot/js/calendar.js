@@ -136,7 +136,7 @@
     };
 
     socket.onmessage = function (event) {
-        console.log("New plan added");
+        console.log(event.data);
         calendar.refetchEvents();
     }
 
