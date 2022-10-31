@@ -32,7 +32,6 @@ public class MQMonitor : BackgroundService
         return base.StartAsync(cancellationToken);
     }
 
-
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         stoppingToken.ThrowIfCancellationRequested();
@@ -75,53 +74,4 @@ public class MQMonitor : BackgroundService
         _connection.Close();
         _logger.LogInformation("RabbitMQ connection is closed.");
     }
-
-    /*
-
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            Task.Run(async () =>
-            {
-                var factory = new ConnectionFactory
-                {
-                    HostName = "localhost"
-                };
-                var connection = factory.CreateConnection();
-                using var channel = connection.CreateModel();
-                channel.QueueDeclare("plans", exclusive: false);
-                var consumer = new EventingBasicConsumer(channel);
-
-
-                consumer.Received += async (model, eventArgs) =>
-                {
-                    var body = eventArgs.Body.ToArray();
-                    var message = Encoding.UTF8.GetString(body);
-                    _logger.Log(LogLevel.Information, "++++++++++++++++++++++++++++++++++++");
-                    foreach (var dict in _connManager.GetAll())
-                    {
-                        var socket = dict.Value;
-                        if (socket.State == WebSocketState.Open)
-                        {
-
-                            await socket.SendAsync(buffer: new ArraySegment<byte>(array: Encoding.ASCII.GetBytes(message),
-                                                                      offset: 0,
-                                                                      count: message.Length),
-                                       messageType: WebSocketMessageType.Text,
-                                       endOfMessage: true,
-                                       cancellationToken: CancellationToken.None);
-                        }
-                    }
-                };
-
-                channel.BasicConsume(queue: "plans", autoAck: true, consumer: consumer);
-            });
-
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-        */
 }
