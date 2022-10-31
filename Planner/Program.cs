@@ -37,10 +37,12 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IMessageProducer, MessageProducer>();
 builder.Services.AddSingleton<ConnectionManager>();
-//builder.Services.AddHostedService<MQMonitor>();
+builder.Services.AddHostedService<MQMonitor>();
 
 var app = builder.Build();
+
 app.UseWebSockets();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();

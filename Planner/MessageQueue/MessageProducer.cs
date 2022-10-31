@@ -13,36 +13,20 @@ public class MessageProducer : IMessageProducer
         _connManager = connManager;
     }
 
-    public async Task SendMessageAsync(string message)
+    public Task SendMessageAsync(string message)
     {
-        /*
-            var factory = new ConnectionFactory
-            {
-                HostName = "localhost"
-            };
-
-            var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
-
-            channel.QueueDeclare("plans", exclusive: false);
-            var body = Encoding.UTF8.GetBytes(message);
-            channel.BasicPublish(exchange: "", routingKey: "plans", body: body);
-            */
-
-        foreach (var dict in _connManager.GetAll())
+        var factory = new ConnectionFactory
         {
-            var socket = dict.Value;
+            HostName = "localhost"
+        };
 
-            if (socket.State == WebSocketState.Open)
-            {
-                await socket.SendAsync(buffer: new ArraySegment<byte>(array: Encoding.ASCII.GetBytes(message),
-                                                          offset: 0,
-                                                          count: message.Length),
-                           messageType: WebSocketMessageType.Text,
-                           endOfMessage: true,
-                           cancellationToken: CancellationToken.None);
-            }
-        }
+        var connection = factory.CreateConnection();
+        using var channel = connection.CreateModel();
 
+        channel.QueueDeclare("plans", autoDelete: false, exclusive: false);
+        var body = Encoding.UTF8.GetBytes(message);
+        channel.BasicPublish(exchange: "", routingKey: "plans", body: body);
+
+        return Task.CompletedTask;
     }
 }
