@@ -21,8 +21,9 @@
                     </div>
                     <div class="col-sm-5 col-xl-5">
                         <label for="searchKey">Search Term</label>
-                        <input type="text" class="form-control" asp-for="@Model.SearchModel.SearchKey"
+                        <input type="text" class="form-control"  id="search-box" asp-for="@Model.SearchModel.SearchKey"
                             placeholder="Search Term">
+                        <div id="suggesstion-box"></div>
                     </div>
                     <div class="col-sm-1 col-xl-1 mt-4">
                         <button type="submit" class="btn btn-primary btn-sm">Search</button>

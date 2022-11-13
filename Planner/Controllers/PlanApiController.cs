@@ -15,7 +15,7 @@ namespace Planner.Controllers
         private readonly PlannerDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IMessageProducer _messagePublisher;
-
+        
         public PlanApiController(PlannerDbContext context, UserManager<IdentityUser> userManager, IMessageProducer messagePublisher)
         {
             _context = context;
@@ -159,6 +159,17 @@ namespace Planner.Controllers
         private bool PlanExists(int id)
         {
             return (_context.Plans?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        [Produces("application/json")]
+        [HttpGet("search")]
+        [Route("api/[controller]/search")]
+        public async Task<ActionResult> Search()
+        {
+            string name = HttpContext.Request.Query["name"].ToString();
+            var names = _context.Events.Where(p => p.Name.Contains(name))
+                    .Select(p => p.Name).ToListAsync();
+            return Ok(await names);
         }
     }
 }
